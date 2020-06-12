@@ -74,17 +74,19 @@ if nargin == 0
     
 elseif nargin == 6
     
+    noise_select = 0;
+    
     % %Wrap the parameters in alpha and beta
-    param.a_1 = alpha(1,1) + 0*1*rand(1);
-    param.a_2 = alpha(1,2) + 0*1*rand(1);
-    param.a_3 = alpha(1,3) + 0*rand(1);
-    param.a_4 = alpha(1,4) + 0*rand(1);
-    param.a_5 = alpha(1,5) + 0*rand(1);
-    param.a_6 = alpha(1,6) + 0*1*rand(1);
-    param.a_7 = alpha(1,7) + 0*rand(1);
-    param.a_8 = alpha(1,8) + 0*rand(1);
-    param.a_9 = alpha(1,9) + 0*rand(1);
-    param.a_10 = alpha(1,10) + 0*rand(1);
+    param.a_1 = alpha(1,1) + noise_select*1*rand(1);
+    param.a_2 = alpha(1,2) + noise_select*1*rand(1);
+    param.a_3 = alpha(1,3) + noise_select*rand(1);
+    param.a_4 = alpha(1,4) + noise_select*rand(1);
+    param.a_5 = alpha(1,5) + noise_select*rand(1);
+    param.a_6 = alpha(1,6) + noise_select*1*rand(1);
+    param.a_7 = alpha(1,7) + noise_select*rand(1);
+    param.a_8 = alpha(1,8) + noise_select*rand(1);
+    param.a_9 = alpha(1,9) + noise_select*rand(1);
+    param.a_10 = alpha(1,10) + noise_select*rand(1);
     param.b_1 = beta(1,1);
     param.b_2 = beta(1,2);
     

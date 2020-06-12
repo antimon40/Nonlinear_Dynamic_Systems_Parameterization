@@ -9,7 +9,7 @@ clear
 close all
 
 %Load simulation data from PST
-filename = strcat('data_simulation_one_generator_fault_gen_14.mat');
+filename = strcat('data_simulation_one_generator_fault_gen_16.mat');
 load(filename);
 
 %Get generator parameter
@@ -19,8 +19,11 @@ lipf = analytic_lipschitz(param,'f');
 
 %%%%Experiment 1-A
 %Epsilons for stopping criteria
-eps_X = 10^-3; %epsilon_omega
-eps_F = 4*10^-2; %epsilon_h
+eps_X = 10^-4; %epsilon_omega
+eps_F = 50; %epsilon_h
+
+%Define the number of slicing for each interval
+q = 20;
 
 %Experiment Data
 for i = 1:length(eps_F)
@@ -36,78 +39,50 @@ for i = 1:length(eps_F)
     %Total time
     totalTime = 0;
 
-    %f2
+    %f
     %Define domain X
     Xset.dim(1).l = x_min(1); %x1
     Xset.dim(1).u = x_max(1);
-    Xset.dim(2).l = x_min(3); %x3
-    Xset.dim(2).u = x_max(3);
-    Xset.dim(3).l = x_min(4); %x4
-    Xset.dim(3).u = x_max(4);
-    Xset.dim(4).l = u_min(3); %u1
-    Xset.dim(4).u = u_max(3);
-    Xset.dim(5).l = u_min(4); %u2
-    Xset.dim(5).u = u_max(4);
+    Xset.dim(2).l = x_min(2); %x2
+    Xset.dim(2).u = x_max(2);
+    Xset.dim(3).l = x_min(3); %x3
+    Xset.dim(3).u = x_max(3);
+    Xset.dim(4).l = x_min(4); %x4
+    Xset.dim(4).u = x_max(4);
+    Xset.dim(5).l = u_min(3); %u1
+    Xset.dim(5).u = u_max(3);
+    Xset.dim(6).l = u_min(4); %u2
+    Xset.dim(6).u = u_max(4);
 
-    tic
     %Compute the maximum of the squared norm of gradient vector for each
-    result{1} = fun_inval_maximization(Xset,param,2,5,eps_F(i),eps_X(i));
-    totalTime = totalTime + toc;
-
-    %f3
-    %Define domain X
-    Xset.dim(1).l = x_min(1); %x1
-    Xset.dim(1).u = x_max(1);
-    Xset.dim(2).l = u_min(3); %u1
-    Xset.dim(2).u = u_max(3);
-    Xset.dim(3).l = u_min(4); %u2
-    Xset.dim(3).u = u_max(4);
-
-    tic
-    %Compute the maximum of the squared norm of gradient vector for each
-    result{2} = fun_inval_maximization(Xset,param,3,3,eps_F(i),eps_X(i));
-    totalTime = totalTime + toc;
-
-    %f4
-    %Define domain X
-    Xset.dim(1).l = x_min(1); %x1
-    Xset.dim(1).u = x_max(1);
-    Xset.dim(2).l = u_min(3); %u1
-    Xset.dim(2).u = u_max(3);
-    Xset.dim(3).l = u_min(4); %u2
-    Xset.dim(3).u = u_max(4);
-
-    %tic
-    %Compute the maximum of the squared norm of gradient vector for each
-    result{3} = fun_inval_maximization(Xset,param,4,3,eps_F(i),eps_X(i));
-    %totalTime = totalTime + toc;
+    result{1} = fun_inval_maximization(Xset,param,[],6,q,eps_F(i),eps_X(i));
 
     %Compute the Lipschitz constant
-    LipSumSqr = result{1}{1} + result{2}{1} + result{3}{1}; 
+    LipSumSqr = result{1}{1}; 
     
     %Compute the Lipschitz constant - lower bound
-    LipSumSqr_lb = result{1}{2} + result{2}{2} + result{3}{2}; 
+    LipSumSqr_lb = result{1}{2}; 
     
     %Compute total split
-    total_split = result{1}{4} + result{2}{4} + result{3}{4}; 
+    total_split = result{1}{4}; 
     
     %Compute total time
-    totalTime = result{1}{5} + result{2}{5} + result{3}{5}; 
+    totalTime = result{1}{5}; 
        
     %Compute total subset
-    total_subset = result{1}{6} + result{2}{6} + result{3}{6}; 
+    total_subset = result{1}{6}; 
     
     %Compute gap
-    gap = mean([result{1}{7} result{2}{7} result{3}{7}]); 
+    gap = (result{1}{7}); 
     
     %Optimality
-    isOpt = result{1}{8} && result{2}{8} && result{3}{8};
+    isOpt = result{1}{8};
     
     %Compute total split 1 
-    total_split1 = result{1}{9} + result{2}{9} + result{3}{9};
+    total_split1 = result{1}{9};
               
     %Compute total split 2
-    total_split2 = result{1}{10} + result{2}{10} + result{3}{10};
+    total_split2 = result{1}{10};
 
     %Approximated Lipschitz constant
     Lip = sqrt(LipSumSqr);
