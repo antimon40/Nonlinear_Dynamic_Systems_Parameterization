@@ -9,7 +9,7 @@ clear
 close all
 
 %Load simulation data from PST
-filename = strcat('data_simulation_one_generator_fault_gen_14.mat');
+filename = strcat('data_simulation_one_generator_fault_gen_16.mat');
 load(filename);
 
 %Get generator parameter
@@ -33,43 +33,23 @@ data1_tab = cell(length(eps_F),2);
 %Experiment 1-A
 for i = 1:length(eps_F)
     
-    %f2
+    %f
     %Define domain X 
     Drx(1,:) = [x_min(1) x_max(1)]; %x1
-    Drx(2,:) = [x_min(3) x_max(3)]; %x3
-    Drx(3,:) = [x_min(4) x_max(4)]; %x4
+    Drx(2,:) = [x_min(2) x_max(2)]; %x2
+    Drx(3,:) = [x_min(3) x_max(3)]; %x3
+    Drx(4,:) = [x_min(4) x_max(4)]; %x4
     Dru(1,:) = [u_min(3) u_max(3)]; %u1
     Dru(2,:) = [u_min(4) u_max(4)]; %u2
     
-    %Compute the maximum of the squared norm of gradient vector for type 2
-    type = 2;
-    [lipsqr1,comptime1] = function_lipschitz_computation_fmincon(Drx,Dru,param,type);
+    [lipsqr1,comptime1] = function_lipschitz_computation_fmincon(Drx,Dru,param,[]);
 
-    %f3
-    %Define domain X
-    Drx(1,:) = [x_min(1) x_max(1)]; %x1
-    Dru(1,:) = [u_min(3) u_max(3)]; %u1
-    Dru(2,:) = [u_min(4) u_max(4)]; %u2
-
-    %Compute the maximum of the squared norm of gradient vector for type 3
-    type = 3;
-    [lipsqr2,comptime2] = function_lipschitz_computation_fmincon(Drx,Dru,param,type);
-
-    %f4
-    %Define domain X
-    Drx(1,:) = [x_min(1) x_max(1)]; %x1
-    Dru(1,:) = [u_min(3) u_max(3)]; %u1
-    Dru(2,:) = [u_min(4) u_max(4)]; %u2
-
-    %Compute the maximum of the squared norm of gradient vector for type 3
-    type = 4;
-    [lipsqr3,comptime3] = function_lipschitz_computation_fmincon(Drx,Dru,param,type);
-
+   
     %Compute the Lipschitz constant
-    LipSumSqr = lipsqr1 + lipsqr2 + lipsqr3; 
+    LipSumSqr = lipsqr1; 
     
     %Compute total time
-    totalTime = comptime1 + comptime2 + comptime3; 
+    totalTime = comptime1; 
 
     %Approximated Lipschitz constant
     Lip = sqrt(LipSumSqr);

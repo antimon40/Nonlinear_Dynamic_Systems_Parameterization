@@ -11,12 +11,15 @@ load(filename);
 tab_mat = table2cell(Tab1(:,1:end-1));
 tab_mat_F = cell2mat(tab_mat);
 eps_F = tab_mat_F(:,2);
-time_F = tab_mat_F(:,5);
+time_F = tab_mat_F(:,6);
 lip_F = tab_mat_F(:,4);
+lip_F_lb = tab_mat_F(:,5);
 % eps_F = flip(eps_F);
 xv = 1:length(eps_F);
-eps_F_tick = [10^-1 10^-2 10^-3 10^-4 10^-5];
+% % eps_F_tick = [10^-1 10^-2 10^-3 10^-4 10^-5];
 % eps_F_tick = [5*10^-1 5*10^-2 5*10^-3 5*10^-4 5*10^-5];
+% eps_F_tick = [80 70 60 50 40 30 20 10]; % [80 70 60 50 40 30 20 10];
+eps_F_tick = [70 50 30 10];
 
 %Load file
 filename = 'data_table_fixed_eps_h.mat';
@@ -26,9 +29,11 @@ load(filename);
 tab_mat = table2cell(Tab1(:,1:end-1));
 tab_mat_X = cell2mat(tab_mat);
 eps_X = tab_mat_X(:,3);
-time_X = tab_mat_X(:,5);
+time_X = tab_mat_X(:,6);
 lip_X = tab_mat_X(:,4);
+lip_X_lb = tab_mat_X(:,5);
 % eps_X = flip(eps_X);
+eps_X_tick = [5*10^-2 1*10^-2 5*10^-3 1*10^-3 5*10^-4 1*10^-4 5*10^-5 1*10^-5];
 
 % semilogx(eps_F,time_F)
 % 
@@ -42,7 +47,7 @@ axes1 = axes;
 hold on
 yyaxis left
 % p1 = semilogx(eps_F,time_F);
-yv1 = interp1(eps_F, time_F, eps_F, 'linear', 'extrap');     
+yv1 = interp1(eps_F, time_F, eps_F, 'linear', 'extrap');   
 p1 = plot(xv,yv1,...%'MarkerFaceColor',[1 1 1],...
     'Marker','square',... %'Color',[0 0 1],...
     'LineWidth',2.5);
@@ -51,27 +56,32 @@ set(p1, 'markerfacecolor', get(p1, 'color'));
 xlabel('$\epsilon_h$', 'interpreter','latex','FontName','Times New Roman','FontSize',fs);
 ylabel('$\Delta t$ (seconds)', 'interpreter','latex','FontName','Times New Roman','FontSize',fs);
 set(gca,'xticklabels',eps_F_tick) 
-ylim([0 16]);
+% ylim([0 230]);
 % xticklabels(eps_F)
 yyaxis right
 % p2 = semilogx(eps_F,lip_F);
-yv2 = interp1(eps_F, lip_F, eps_F, 'linear', 'extrap');    
+yv2 = interp1(eps_F, lip_F, eps_F, 'linear', 'extrap');
+yv3 = interp1(eps_F, lip_F_lb, eps_F, 'linear', 'extrap');
 p2 = plot(xv,yv2,...'MarkerFaceColor',[1 1 1],...
     'Marker','diamond',... %'Color',[1 0 0],...
     'LineStyle','--','LineWidth',2.5);
-set(p2, 'markerfacecolor', get(p2, 'color'));
+p3 = plot(xv,yv3,...
+    'Marker','o',...
+    'LineStyle',':','LineWidth',2.5);
+set(p2, 'markerfacecolor', get(p2,'color'));
+set(p3, 'markerfacecolor', get(p3,'color'));
 % p2 = plot(xv,yv2,'LineStyle','-.','LineWidth',2.5);
 % xlabel('$\epsilon_h$', 'interpreter','latex','FontName','Times New Roman','FontSize',fs);
-ylabel('$\gamma_l$', 'interpreter','latex','FontName','Times New Roman','FontSize',fs);
+ylabel('$\gamma_l,\,\underline{\gamma}_l$', 'interpreter','latex','FontName','Times New Roman','FontSize',fs);
 set(gca,'xticklabels',eps_F_tick) 
 % xticklabels(eps_F)
 grid off
 box on
 xlim([min(xv) max(xv)+1]);
 
-Lgd = legend(gca,[p1 p2],{'$\Delta t$','$\gamma_l$'},'location','northwest','interpreter','latex','FontName','Times New Roman','FontSize',18);
+Lgd = legend(gca,[p1 p2 p3],{'$\Delta t$','$\gamma_l$','$\underline{\gamma}_l$'},'location','northwest','interpreter','latex','FontName','Times New Roman','FontSize',18);
 Lgd.ItemTokenSize(1) = 35;
-rect = [0.257, 0.84, .0001, .0001];
+rect = [0.257, 0.58, .0001, .0001];
 set(Lgd, 'Position', rect);
 legend boxoff;
 
@@ -129,23 +139,29 @@ set(p1, 'markerfacecolor', get(p1, 'color'));
 % p1 = plot(xv,yv1,'LineWidth',2.5);
 xlabel('$\epsilon_{\Omega}$', 'interpreter','latex','FontName','Times New Roman','FontSize',fs);
 ylabel('$\Delta t$ (seconds)', 'interpreter','latex','FontName','Times New Roman','FontSize',fs);
-set(gca,'xticklabels',eps_F_tick) 
+set(gca,'xticklabels',eps_X_tick) 
 xlim([min(xv) max(xv)]);
 yyaxis right
-yv2 = interp1(eps_X, lip_X, eps_X, 'linear', 'extrap');    
+yv2 = interp1(eps_X, lip_X, eps_X, 'linear', 'extrap');  
+yv3 = interp1(eps_F, lip_X_lb, eps_F, 'linear', 'extrap');
 p2 = plot(xv,yv2,...'MarkerFaceColor',[1 1 1],...
     'Marker','diamond',... %'Color',[1 0 0],...
     'LineStyle','--','LineWidth',2.5);
+p3 = plot(xv,yv3,...
+    'Marker','o',...
+    'LineStyle',':','LineWidth',2.5);
 set(p2, 'markerfacecolor', get(p2, 'color'));
+set(p3, 'markerfacecolor', get(p3,'color'));
 % p2 = plot(xv,yv2,'LineStyle','-.','LineWidth',2.5);
-ylabel('$\gamma_l$', 'interpreter','latex','FontName','Times New Roman','FontSize',fs);
-set(gca,'xticklabels',eps_F_tick) 
+ylabel('$\gamma_l,\,\underline{\gamma}_l$', 'interpreter','latex','FontName','Times New Roman','FontSize',fs);
+set(gca,'xticklabels',eps_X_tick) 
+ylim([32.075 32.4]);
 grid off
 box on
 
-Lgd = legend(gca,[p1 p2],{'$\Delta t$','$\gamma_l$'},'location','southeast','interpreter','latex','FontName','Times New Roman','FontSize',18);
+Lgd = legend(gca,[p1 p2 p3],{'$\Delta t$','$\gamma_l$','$\underline{\gamma}_l$'},'location','southeast','interpreter','latex','FontName','Times New Roman','FontSize',18);
 Lgd.ItemTokenSize(1) = 35;
-rect = [0.377, 0.84, .0001, .0001];
+rect = [0.725, 0.5, .0001, .0001];
 set(Lgd, 'Position', rect);
 legend boxoff;
 xlim([min(xv) max(xv)]);

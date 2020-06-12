@@ -8,7 +8,7 @@ clear
 close all
 
 %Load simulation data from PST
-filename = strcat('data_simulation_one_generator_fault_gen_14.mat');
+filename = strcat('data_simulation_one_generator_fault_gen_16.mat');
 load(filename);
 
 %Get generator parameter
@@ -47,7 +47,10 @@ m = size(Bu,2);
 p  =size(C,1);
 
 %Choose Lipschitz constant
-lipf = 11.5593;
+lipf = 32.3513894311512;
+
+%Analytic Lipschitz constant
+lip_analytic = analytic_lipschitz(param,'f');
 
 %Constant for positive definiteness
 eps1 = 10^-14;

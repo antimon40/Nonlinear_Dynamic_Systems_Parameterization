@@ -1,0 +1,69 @@
+%Main Program
+%Lipschitz constant computation using interval optimization
+%Use value from the left corner of S to update L (Moa)
+%System: single synchronous generator model
+%Author: Sebastian A. Nugroho
+%Date: 2/26/2019
+
+clear 
+close all
+
+%Load simulation data from PST
+filename = strcat('data_simulation_one_generator_fault_gen_16.mat');
+load(filename);
+
+%Get generator parameter
+param = one_generator_parameter(alpha,beta,x_min,x_max,u_min,u_max);
+
+lipf = analytic_lipschitz(param,'f');
+
+%%%%Experiment 1-A
+%Epsilons for stopping criteria
+eps_X = 10^-3; %epsilon_omega
+eps_F = 10^-2; %epsilon_h
+
+%Experiment Data
+for i = 1:length(eps_F)
+    exp_data1.result{i} = {[]};
+end
+
+%Initialize data
+data1_tab = cell(length(eps_F),2);
+
+%Experiment 1-A
+for i = 1:length(eps_F)
+    
+    %f
+    %Define domain X 
+    Drx(1,:) = [x_min(1) x_max(1)]; %x1
+    Drx(2,:) = [x_min(2) x_max(2)]; %x2
+    Drx(3,:) = [x_min(3) x_max(3)]; %x3
+    Drx(4,:) = [x_min(4) x_max(4)]; %x4
+    Dru(1,:) = [u_min(3) u_max(3)]; %u1
+    Dru(2,:) = [u_min(4) u_max(4)]; %u2
+    
+    %Compute the maximum of the 2 norm of the Jacobian
+    [LipSumSqr,totalTime] = function_lipschitz_computation_fmincon_2_norm(Drx,Dru,param);
+
+    %Approximated Lipschitz constant
+    Lip = (LipSumSqr);
+    disp(' ');
+    fprintf('The overall Lipschitz constant is: %.10f\n',Lip);
+    disp(' ');
+    fprintf('The overall computation time: %.3f\n',totalTime);
+    
+    %Store data    
+    data1_tab(i,:) = {Lip totalTime};
+
+    %Convert to table
+    Tab1 = cell2table(data1_tab,'VariableNames',{ 'Lipcon','comp_time'});
+
+    %Save file
+    filename = 'data_table_globalsearch_2_norm_benchmark.mat';
+    save(filename,'Tab1');
+    
+    %Save data
+    exp_data1.result{i} = {Lip, totalTime};
+    save('data_matrix_globalsearch_2_norm_benchmark.mat','exp_data1');
+    
+end

@@ -1,4 +1,4 @@
-function out = fun_inval_maximization(Xset,param,type,dim,eps_F,eps_X)
+function out = fun_inval_maximization(Xset,param,type,dim,q,eps_F,eps_X)
 %Main function for global maximization using interval arithmetic
 %Interval arithmetic for global optimization
 %Computing the range of Lipschitz constant for differentiable function
@@ -40,9 +40,6 @@ for i = 1:dim
     X.dim(i).l = Xset.dim(i).l;
     X.dim(i).u = Xset.dim(i).u;
 end
-
-%Define the number of slicing for each interval
-q = 5;
 
 %Initialize S
 %Compute lb and ub for f(X)

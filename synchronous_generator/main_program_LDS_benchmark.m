@@ -9,7 +9,7 @@ clear
 close all
 
 %Load simulation data from PST
-filename = strcat('data_simulation_one_generator_fault_gen_14.mat');
+filename = strcat('data_simulation_one_generator_fault_gen_16.mat');
 load(filename);
 
 %Get generator parameter
@@ -39,8 +39,9 @@ for i = 1:length(eps_F)
     %f2
     %Define domain X 
     Drx(1,:) = [x_min(1) x_max(1)]; %x1
-    Drx(2,:) = [x_min(3) x_max(3)]; %x3
-    Drx(3,:) = [x_min(4) x_max(4)]; %x4
+    Drx(2,:) = [x_min(2) x_max(2)]; %x2
+    Drx(3,:) = [x_min(3) x_max(3)]; %x3
+    Drx(4,:) = [x_min(4) x_max(4)]; %x4
     Dru(1,:) = [u_min(3) u_max(3)]; %u1
     Dru(2,:) = [u_min(4) u_max(4)]; %u2
     
@@ -55,87 +56,21 @@ for i = 1:length(eps_F)
     seq_type = 'sobol';
     
     %Compute the maximum of the squared norm of gradient vector for type 2
-    type = 2;
+    type = [];
     [lipsqr1_s,comptime1_s] = function_lipschitz_computation_LDS(Drx,Dru,param,type,seq_type,sample_size);
     
     %Sequence type
     seq_type = 'halton';
     
     %Compute the maximum of the squared norm of gradient vector for type 2
-    type = 2;
+    type = [];
     [lipsqr1_h,comptime1_h] = function_lipschitz_computation_LDS(Drx,Dru,param,type,seq_type,sample_size);
-
-    %f3
-    %Define domain X
-    Drx(1,:) = [x_min(1) x_max(1)]; %x1
-    Dru(1,:) = [u_min(3) u_max(3)]; %u1
-    Dru(2,:) = [u_min(4) u_max(4)]; %u2
-    
-%     %Sequence type
-%     seq_type = 'random';
-% 
-%     %Compute the maximum of the squared norm of gradient vector for type 3
-%     type = 3;
-%     [lipsqr2_r,comptime2_r] = function_lipschitz_computation_LDS(Drx,Dru,param,type,seq_type,sample_size);
-    
-    %Sequence type
-    seq_type = 'sobol';
-
-    %Compute the maximum of the squared norm of gradient vector for type 3
-    type = 3;
-    [lipsqr2_s,comptime2_s] = function_lipschitz_computation_LDS(Drx,Dru,param,type,seq_type,sample_size);
-    
-    %Sequence type
-    seq_type = 'halton';
-
-    %Compute the maximum of the squared norm of gradient vector for type 3
-    type = 3;
-    [lipsqr2_h,comptime2_h] = function_lipschitz_computation_LDS(Drx,Dru,param,type,seq_type,sample_size);
-
-    %f4
-    %Define domain X
-    Drx(1,:) = [x_min(1) x_max(1)]; %x1
-    Dru(1,:) = [u_min(3) u_max(3)]; %u1
-    Dru(2,:) = [u_min(4) u_max(4)]; %u2
-    
-%     %Sequence type
-%     seq_type = 'random';
-% 
-%     %Compute the maximum of the squared norm of gradient vector for type 3
-%     type = 4;
-%     [lipsqr3_r,comptime3_r] = function_lipschitz_computation_LDS(Drx,Dru,param,type,seq_type,sample_size);
-    
-    %Sequence type
-    seq_type = 'sobol';
-
-    %Compute the maximum of the squared norm of gradient vector for type 3
-    type = 4;
-    [lipsqr3_s,comptime3_s] = function_lipschitz_computation_LDS(Drx,Dru,param,type,seq_type,sample_size);
-    
-    %Sequence type
-    seq_type = 'halton';
-
-    %Compute the maximum of the squared norm of gradient vector for type 3
-    type = 4;
-    [lipsqr3_h,comptime3_h] = function_lipschitz_computation_LDS(Drx,Dru,param,type,seq_type,sample_size);
-
-%     %Compute the Lipschitz constant - random
-%     LipSumSqr_r = lipsqr1_r + lipsqr2_r + lipsqr3_r; 
-%     
-%     %Compute total time - random
-%     totalTime_r = comptime1_r + comptime2_r + comptime3_r; 
-    
+   
     %Compute the Lipschitz constant - sobol
-    LipSumSqr_s = lipsqr1_s + lipsqr2_s + lipsqr3_s; 
-    
-    %Compute total time - random
-    totalTime_s = comptime1_s + comptime2_s + comptime3_s;
+    LipSumSqr_s = lipsqr1_s; 
     
     %Compute the Lipschitz constant - halton
-    LipSumSqr_h = lipsqr1_h + lipsqr2_h + lipsqr3_h; 
-    
-    %Compute total time - random
-    totalTime_h = comptime1_h + comptime2_h + comptime3_h;
+    LipSumSqr_h = lipsqr1_h; 
 
 %     %Approximated Lipschitz constant
 %     Lip_r = sqrt(LipSumSqr_r);
@@ -149,17 +84,17 @@ for i = 1:length(eps_F)
     disp(' ');
     fprintf('The overall Lipschitz constant - sobol: %.10f\n',Lip_s);
     disp(' ');
-    fprintf('The overall computation time - sobol: %.3f\n',totalTime_s);
+    fprintf('The overall computation time - sobol: %.3f\n',comptime1_s);
     
     %Approximated Lipschitz constant
     Lip_h = sqrt(LipSumSqr_h);
     disp(' ');
     fprintf('The overall Lipschitz constant - halton: %.10f\n',Lip_h);
     disp(' ');
-    fprintf('The overall computation time - halton: %.3f\n',totalTime_h);
+    fprintf('The overall computation time - halton: %.3f\n',comptime1_h);
     
     %Store data    
-    data1_tab(i,:) = {Lip_s Lip_h totalTime_s totalTime_h};
+    data1_tab(i,:) = {Lip_s Lip_h comptime1_s comptime1_h};
 
     %Convert to table
     Tab1 = cell2table(data1_tab,'VariableNames',{ 'Lipcon_sobol','Lipcon_halton','time_sobol','time_halton'});
@@ -169,7 +104,7 @@ for i = 1:length(eps_F)
     save(filename,'Tab1');
     
     %Save data
-    exp_data1.result{i} = {Lip_s, Lip_h, totalTime_s, totalTime_h};
+    exp_data1.result{i} = {Lip_s, Lip_h, comptime1_s, comptime1_h};
     save('data_matrix_LDS_benchmark.mat','exp_data1');
     
 end
